@@ -4,30 +4,46 @@ import { useColor } from './useColor'
 import { Input } from './inputs'
 import { useFormContext } from 'react-hook-form'
 
-const Hue = (props) => (
+const Hue = ({ color, ...props }) => (
   <>
-    <Input name="hue" type="range" min={0} max={359} {...props} />
+    <div className="slider-track" style={{
+      background: `linear-gradient(to right, ${Array(360).fill(0).map((_, i) => color.hue(i)).join(', ')})`,
+    }}>
+      <Input name="hue" type="range" min={0} max={359} {...props} />
+    </div>
     <Input name="hueNum" type="number" min={0} max={359} {...props} />
   </>
 )
 
-const SaturationL = (props) => (
+const SaturationL = ({ color, ...props }) => (
   <>
-    <Input name="saturationl" type="range" min={0} max={100} {...props}/ >
+    <div className="slider-track" style={{
+      background: `linear-gradient(to right, ${color.saturationl(0)}, ${color.saturationl(100)})`,
+    }}>
+      <Input name="saturationl" type="range" min={0} max={100} {...props}/ >
+    </div>
     <Input name="saturationlNum" type="number" min={0} max={100} {...props}/ >
   </>
 )
 
-const Lightness = (props) => (
+const Lightness = ({ color, ...props }) => (
   <>
-    <Input name="lightness" type="range" min={0} max={100} {...props} />
+    <div className="slider-track" style={{
+      background: `linear-gradient(to right, ${color.lightness(0)}, ${color.lightness(50)}, ${color.lightness(100)})`,
+    }}>
+      <Input name="lightness" type="range" min={0} max={100} {...props} />
+    </div>
     <Input name="lightnessNum" type="number" min={0} max={100} {...props} />
   </>
 )
 
-const Alpha = (props) => (
+const Alpha = ({ color, ...props }) => (
   <>
-    <Input name="alpha" type="range" min={0} step={0.01} max={1} {...props} />
+    <div className="slider-track" style={{
+      background: `linear-gradient(to right, ${color.alpha(0)}, ${color.alpha(1)})`,
+    }}>
+      <Input name="alpha" type="range" min={0} step={0.01} max={1} {...props} />
+    </div>
     <Input name="alphaNum" type="number" min={0} step={0.01} max={1} {...props} />
   </>
 )
@@ -47,12 +63,15 @@ export const Picker = () => {
   const { setValue } = useFormContext()
 
   const onChange = ([name, value]) => {
-    const newColor = color[name](value)
-    Object.entries(colorObject(newColor)).forEach(([n, v]) => {
-      if (n !== name) setValue(n, v)
-    })
-
-    setColor(newColor.toString())
+    try {
+      const newColor = color[name.replace('Num', '')](value)
+      Object.entries(colorObject(newColor)).forEach(([n, v]) => {
+        if (n !== name) setValue(n, v)
+      })
+      setColor(newColor.toString())
+    } catch (e) {
+      console.log('cannot create color')
+    }
   }
 
   const onChangeText = ([name, value]) => {
@@ -69,10 +88,10 @@ export const Picker = () => {
 
   return (
     <div>
-      <Hue onChange={onChange} />
-      <SaturationL onChange={onChange} />
-      <Lightness onChange={onChange} />
-      <Alpha onChange={onChange} />
+      <Hue onChange={onChange} color={color} />
+      <SaturationL onChange={onChange} color={color} />
+      <Lightness onChange={onChange} color={color} />
+      <Alpha onChange={onChange} color={color} />
 
       <HslText onChange={onChangeText} />
       <RgbText onChange={onChangeText} />
