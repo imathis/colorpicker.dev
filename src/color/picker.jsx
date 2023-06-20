@@ -4,75 +4,99 @@ import { useColor } from './useColor'
 import { Input } from './inputs'
 import { useFormContext } from 'react-hook-form'
 
-const Hue = ({ color, ...props }) => (
+const trackBg = ({
+  type = '',
+  steps = 0,
+  props = [],
+  alpha = 'var(--alpha)',
+}) => {
+  const grad = []
+  const propVal = (prop, i) => typeof prop === 'function' ? prop(i) : prop
+  for (let i=0; i < steps; i += 1) {
+    const vals = props.map((val) => propVal(val, i)).join(' ')
+    grad.push(`${type}(${vals} / ${propVal(alpha, i)})`)
+  }
+  return `linear-gradient(to right, ${grad.join(', ')})`
+}
+const hslBg = ({
+  hue   = 'var(--hue)',
+  sat   = 'calc(var(--saturationl) * 1%)',
+  lig   = 'calc(var(--lightness) * 1%)',
+  ...props
+}) => trackBg({ type: 'hsl', props: [hue, sat, lig], ...props })
+
+const hwbBg = ({
+  hue    = 'var(--hue)',
+  white  = 'calc(var(--white) * 1%)',
+  wblack = 'calc(var(--wblack) * 1%)',
+  ...props
+}) => trackBg({ type: 'hwb', props: [hue, white, wblack], ...props })
+
+const rgbBg = ({
+  red   = 'var(--red)',
+  green = 'var(--green)',
+  blue  = 'var(--blue)',
+  steps = 255,
+  ...props
+}) => trackBg({ type: 'rgba', props: [red, green, blue], steps, ...props })
+
+const background = {
+  hsl: {
+    hue: hslBg({ hue: (v) => v, steps: 360 }),
+    saturationl: hslBg({ sat: (s) => s ? '100%' : '0%', steps: 2 }),
+    lightness: hslBg({ lig: (l) => `${l * 50}%`, steps: 3 }),
+    alpha: hslBg({ alpha: (v) => v, steps: 2 }),
+  },
+  hwb: {
+    hue: hwbBg({ hue: (v) => v, steps: 360 }),
+    white: hwbBg({ white: (v) => `${v * 100}%`, steps: 2 }),
+    wblack: hwbBg({ wblack: (v) => `${v * 100}%`, steps: 2 }),
+    alpha: hwbBg({ alpha: (v) => v, steps: 2 }),
+  },
+  rgb: {
+    red: rgbBg({ red: (v) => v }),
+    green: rgbBg({ green: (v) => v }),
+    blue: rgbBg({ blue: (v) => v }),
+    alpha: rgbBg({ alpha: (v) => v, steps: 2 }),
+  },
+}
+
+const ColorSlider = ({ name, mode, ...props }) => (
   <>
-    <div className="slider-track" style={{
-      background: `linear-gradient(to right, ${Array(360).fill(0).map((_, i) => color.hue(i)).join(', ')})`,
-    }}>
-      <Input name="hue" type="range" min={0} max={359} {...props} />
+    <div className="slider-track" style={{ background: background[mode][name] }}>
+      <Input type="range" name={name} min={0} max={100} step={1} {...props} />
     </div>
-    <Input name="hueNum" type="number" min={0} max={359} {...props} />
+    <Input type="number" name={`${name}Num`} min={0} max={100} step={1} {...props} />
   </>
 )
 
-const SaturationL = ({ color, ...props }) => (
+const Hsl = (props) => (
   <>
-    <div className="slider-track" style={{
-      background: `linear-gradient(to right, ${color.saturationl(0)}, ${color.saturationl(100)})`,
-    }}>
-      <Input name="saturationl" type="range" min={0} max={100} {...props}/ >
-    </div>
-    <Input name="saturationlNum" type="number" min={0} max={100} {...props}/ >
+    <ColorSlider name="hue" {...props} />
+    <ColorSlider name="saturationl" {...props} />
+    <ColorSlider name="lightness" {...props} />
   </>
 )
 
-const Lightness = ({ color, ...props }) => (
+const Hwb = (props) => (
   <>
-    <div className="slider-track" style={{
-      background: `linear-gradient(to right, ${color.lightness(0)}, ${color.lightness(50)}, ${color.lightness(100)})`,
-    }}>
-      <Input name="lightness" type="range" min={0} max={100} {...props} />
-    </div>
-    <Input name="lightnessNum" type="number" min={0} max={100} {...props} />
+    <ColorSlider name="hue" {...props} />
+    <ColorSlider name="white" {...props} />
+    <ColorSlider name="wblack" {...props} />
   </>
 )
 
-const Alpha = ({ color, ...props }) => (
+const Rgb = (props) => (
   <>
-    <div className="slider-track" style={{
-      background: `linear-gradient(to right, ${color.alpha(0)}, ${color.alpha(1)})`,
-    }}>
-      <Input name="alpha" type="range" min={0} step={0.01} max={1} {...props} />
-    </div>
-    <Input name="alphaNum" type="number" min={0} step={0.01} max={1} {...props} />
+    <ColorSlider name="red" max={255} {...props} />
+    <ColorSlider name="green" max={255} {...props} />
+    <ColorSlider name="blue" max={255} {...props} />
   </>
-)
-
-const HslText = (props) => (
-  <Input name="hsl" type="text" {...props}/>
-)
-const RgbText = (props) => (
-  <Input name="rgb" type="text" {...props}/>
-)
-const HexText = (props) => (
-  <Input name="hex" type="text" {...props}/>
 )
 
 export const Picker = () => {
-  const { color, setColor, colorObject } = useColor()
+  const { mode, setColor, colorObject, adjustColor } = useColor()
   const { setValue } = useFormContext()
-
-  const onChange = ([name, value]) => {
-    try {
-      const newColor = color[name.replace('Num', '')](value)
-      Object.entries(colorObject(newColor)).forEach(([n, v]) => {
-        if (n !== name) setValue(n, v)
-      })
-      setColor(newColor.toString())
-    } catch (e) {
-      console.log('cannot create color')
-    }
-  }
 
   const onChangeText = ([name, value]) => {
     try {
@@ -86,16 +110,32 @@ export const Picker = () => {
     }
   }
 
+  const onChange = ([name, value]) => {
+    const colorProp = name.replace('Num', '')
+    const matchingVal = name.includes('Num') ? colorProp : `${name}Num`
+    setValue(matchingVal, value)
+    const c = adjustColor(colorProp, value)
+    setValue('hsl', c.hsl().string())
+    setValue('hwb', c.hwb().string())
+    setValue('rgb', c.rgb().string())
+    setValue('hex', c.alpha() < 1 ? c.hexa() : c.hex())
+  }
+
+  const Sliders = {
+    rgb: Rgb,
+    hsl: Hsl,
+    hwb: Hwb,
+  }[mode]
+
   return (
     <div>
-      <Hue onChange={onChange} color={color} />
-      <SaturationL onChange={onChange} color={color} />
-      <Lightness onChange={onChange} color={color} />
-      <Alpha onChange={onChange} color={color} />
+      <Sliders onChange={onChange} mode={mode} />
+      <ColorSlider name="alpha" step={0.01} max={1} onChange={onChange} mode={mode} />
 
-      <HslText onChange={onChangeText} />
-      <RgbText onChange={onChangeText} />
-      <HexText onChange={onChangeText} />
+      <Input name="hsl" type="text" onChange={onChangeText} />
+      <Input name="hwb" type="text" onChange={onChangeText} />
+      <Input name="rgb" type="text" onChange={onChangeText} />
+      <Input name="hex" type="text" onChange={onChangeText} />
     </div>
   )
 }
