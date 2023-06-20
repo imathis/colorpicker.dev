@@ -9,41 +9,47 @@ const getRandom = (min, max, unit) => {
   return unit ? `${num}${unit}` : num
 }
 
-const parts = {
-  hsl: ['hue', 'saturationl', 'lightness'],
-  hwb: ['hue', 'white', 'wblack'],
-  rgb: ['red', 'green', 'blue'],
+const models = {
+  hsl: ['hue', 'saturationl', 'lightness', 'alpha'],
+  hwb: ['hue', 'white', 'wblack', 'alpha'],
+  rgb: ['red', 'green', 'blue', 'alpha'],
+}
+
+const setRootColor = (color) => {
+  document.documentElement.style.setProperty('--color', color.alpha(1).toString().replaceAll(',','').replace(')', ` / ${color.alpha()})`))
 }
 
 export const useColorHooks = () => {
-  const initialColor = Color(`hsla(${getRandom(0,359)}, 100%, 50%, 1)`)
-  const [color, setColorValue] = React.useState(initialColor)
-  const [mode, setMode] = React.useState('rgb')
+  const [model, setModel] = React.useState('hsl')
+  const [color, setColorValue] = React.useState()
 
-  const setColor = (val) => {
-    const c =  Color(val)
-    setColorValue(c)
-  }
+  const setColor = React.useCallback((val) => {
+    setColorValue(val)
+    setRootColor(val)
+  }, [])
+
+  const getCurrentColor = React.useCallback(() => {
+    try {
+      const p = models[model].map((part) => (
+        Number.parseFloat(document.documentElement.style.getPropertyValue(`--${part}`), 10)
+      ))
+      return Color[model](...p)
+    } catch (e) {
+      return null
+    }
+  }, [model])
 
   const adjustColor = React.useCallback((prop, value) => {
     document.documentElement.style.setProperty(`--${prop}`, value)
-    const p = parts[mode].map((part) => (
-      Number.parseInt(document.documentElement.style.getPropertyValue(`--${part}`), 10)
-    ))
-    const alpha = Number.parseFloat(document.documentElement.style.getPropertyValue(`--alpha`), 10)
-    const colorString = `${mode}(${p.join(' ')} / ${alpha})`
-    document.documentElement.style.setProperty(`--color`, colorString)
-    const newColor = Color(colorString)
+    const newColor = getCurrentColor()
     setColor(newColor)
     return newColor
-  }, [mode])
+  }, [setColor, getCurrentColor])
 
   const colorObject = React.useCallback((c) => ({
     hue: c.hue(),
     saturationl: c.saturationl(),
-    saturationv: c.saturationv(),
     lightness: c.lightness(),
-    value: c.value(),
     white: c.white(),
     wblack: c.wblack(),
     red: c.red(),
@@ -57,16 +63,19 @@ export const useColorHooks = () => {
   }), [])
 
   React.useEffect(() => {
-    document.documentElement.style.setProperty('--color', color.alpha(1).toString().replaceAll(',','').replace(')', ` / ${color.alpha()})`))
-    const c = colorObject(color)
-    Object.entries(c).forEach(([k, v]) => { 
-      document.documentElement.style.setProperty(`--${k}`, v)
-    })
-  }, [color, colorObject])
-
+    if (!color) {
+      const initialColor = Color(Color(`hsla(${getRandom(0,359)}, 100%, 50%, 1)`).hexa())
+      setColor(initialColor)
+    } else if (color.model !== model) {
+      models[model].forEach((part) => {
+        document.documentElement.style.setProperty(`--${part}`, color[part]())
+      })
+    }
+  }, [color, model])
 
   return {
-    mode,
+    model,
+    models,
     color,
     setColor,
     colorObject,

@@ -61,9 +61,9 @@ const background = {
   },
 }
 
-const ColorSlider = ({ name, mode, ...props }) => (
+const ColorSlider = ({ name, model, ...props }) => (
   <>
-    <div className="slider-track" style={{ background: background[mode][name] }}>
+    <div className="slider-track" style={{ background: background[model][name] }}>
       <Input type="range" name={name} min={0} max={100} step={1} {...props} />
     </div>
     <Input type="number" name={`${name}Num`} min={0} max={100} step={1} {...props} />
@@ -72,7 +72,7 @@ const ColorSlider = ({ name, mode, ...props }) => (
 
 const Hsl = (props) => (
   <>
-    <ColorSlider name="hue" {...props} />
+    <ColorSlider name="hue" max={360} {...props} />
     <ColorSlider name="saturationl" {...props} />
     <ColorSlider name="lightness" {...props} />
   </>
@@ -80,7 +80,7 @@ const Hsl = (props) => (
 
 const Hwb = (props) => (
   <>
-    <ColorSlider name="hue" {...props} />
+    <ColorSlider name="hue" max={360} {...props} />
     <ColorSlider name="white" {...props} />
     <ColorSlider name="wblack" {...props} />
   </>
@@ -95,16 +95,36 @@ const Rgb = (props) => (
 )
 
 export const Picker = () => {
-  const { mode, setColor, colorObject, adjustColor } = useColor()
+  const { color, model, setColor, adjustColor, models } = useColor()
   const { setValue } = useFormContext()
+
+  const setInputs = React.useCallback((newColor, fromInput) => {
+    const inputs = {
+      hsl: newColor.hsl().string(),
+      hwb: newColor.hwb().string(),
+      rgb: newColor.rgb().string(),
+      hex: newColor.alpha() < 1 ? newColor.hexa() : newColor.hex(),
+    }
+    Object.entries(inputs).filter(([k])=> k !== fromInput).forEach(([k, v]) => {
+      setValue(k, v)
+    })
+    models[model].forEach((prop) => {
+      setValue(prop, newColor[prop]())
+      setValue(`${prop}Num`, newColor[prop]())
+    })
+  }, [models, model, setValue])
+
+  React.useEffect(() => {
+    if (color && color.model !== model) {
+      setInputs(color)
+    }
+  }, [color, model, setInputs])
 
   const onChangeText = ([name, value]) => {
     try {
       const newColor = Color(value)
+      setInputs(newColor, name)
       setColor(newColor)
-      Object.entries(colorObject(newColor)).forEach(([n, v]) => {
-        if (n !== name) setValue(n, v)
-      })
     } catch (e) {
       console.log('cannot create color')
     }
@@ -125,12 +145,12 @@ export const Picker = () => {
     rgb: Rgb,
     hsl: Hsl,
     hwb: Hwb,
-  }[mode]
+  }[model]
 
   return (
     <div>
-      <Sliders onChange={onChange} mode={mode} />
-      <ColorSlider name="alpha" step={0.01} max={1} onChange={onChange} mode={mode} />
+      <Sliders onChange={onChange} model={model} />
+      <ColorSlider name="alpha" step={0.01} max={1} onChange={onChange} model={model} />
 
       <Input name="hsl" type="text" onChange={onChangeText} />
       <Input name="hwb" type="text" onChange={onChangeText} />
