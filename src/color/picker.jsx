@@ -1,8 +1,9 @@
 import Color from 'color'
 import React from 'react'
 import { useColor } from './useColor'
-import { Input } from './inputs'
+import { Input, CodeInput } from './inputs'
 import { useFormContext } from 'react-hook-form'
+import { getRoot, setRoot } from './helpers'
 
 const trackBg = ({
   type = '',
@@ -62,12 +63,12 @@ const background = {
 }
 
 const ColorSlider = ({ name, model, ...props }) => (
-  <>
-    <div className="slider-track" style={{ background: background[model][name] }}>
-      <Input type="range" name={name} min={0} max={100} step={1} {...props} />
+  <div className="color-slider">
+    <div className="slider-track" >
+      <Input type="range" name={name} min={0} max={100} step={1} {...props} style={{ background: background[model][name] }} />
     </div>
     <Input type="number" name={`${name}Num`} min={0} max={100} step={1} {...props} />
-  </>
+  </div>
 )
 
 const Hsl = (props) => (
@@ -95,10 +96,11 @@ const Rgb = (props) => (
 )
 
 export const Picker = () => {
-  const { color, model, setColor, adjustColor, models } = useColor()
+  const { model, color, adjustColor, models, setModel, setColor } = useColor()
   const { setValue } = useFormContext()
+  const init = React.useRef(true)
 
-  const setInputs = React.useCallback((newColor, fromInput) => {
+  const updateText = React.useCallback(({ newColor, fromInput }) => {
     const inputs = {
       hsl: newColor.hsl().string(),
       hwb: newColor.hwb().string(),
@@ -108,38 +110,50 @@ export const Picker = () => {
     Object.entries(inputs).filter(([k])=> k !== fromInput).forEach(([k, v]) => {
       setValue(k, v)
     })
-    models[model].forEach((prop) => {
-      setValue(prop, newColor[prop]())
-      setValue(`${prop}Num`, newColor[prop]())
-    })
-  }, [models, model, setValue])
+  }, [setValue])
 
-  React.useEffect(() => {
-    if (color && color.model !== model) {
-      setInputs(color)
+  // When a color is set, update each slider and number input
+  const updateSliders = React.useCallback(({ newColor }) => {
+    if (model) {
+      const c = newColor[model]()
+      models[model].forEach((prop) => {
+        setValue(prop, c[prop]())
+        setValue(`${prop}Num`, c[prop]())
+      })
     }
-  }, [color, model, setInputs])
+  }, [setValue, model, models])
 
-  const onChangeText = ([name, value]) => {
-    try {
-      const newColor = Color(value)
-      setInputs(newColor, name)
-      setColor(newColor)
-    } catch (e) {
-      console.log('cannot create color')
-    }
-  }
-
-  const onChange = ([name, value]) => {
+  // When a slider (or matching number input) changes:
+  // - Update the matching input (number or slider)
+  // - Set the color prop
+  // - Update the text inputs with the new color
+  const setSliderInput = React.useCallback(([name, value]) => {
     const colorProp = name.replace('Num', '')
     const matchingVal = name.includes('Num') ? colorProp : `${name}Num`
     setValue(matchingVal, value)
-    const c = adjustColor(colorProp, value)
-    setValue('hsl', c.hsl().string())
-    setValue('hwb', c.hwb().string())
-    setValue('rgb', c.rgb().string())
-    setValue('hex', c.alpha() < 1 ? c.hexa() : c.hex())
-  }
+    updateText({ newColor: adjustColor(colorProp, value) })
+  }, [updateText, adjustColor, setValue])
+
+  const onChangeText = React.useCallback(([name, value]) => {
+    try {
+      const newColor = setColor(value)
+      updateText({ newColor, fromInput: name })
+      updateSliders({ newColor })
+      console.log('worked')
+    } catch (e) {
+      console.log(e)
+      console.log('cannot create color')
+    }
+  }, [updateText, updateSliders])
+
+  // On initial load, or when model changes, update inputs to match new color model
+  React.useEffect(() => {
+    if ((init.current && color) || (!init.current && color?.model !== model)) {
+      updateSliders({ newColor: color })
+      updateText({ newColor: color })
+      init.current = false
+    }
+  }, [model, color, init, updateText, updateSliders])
 
   const Sliders = {
     rgb: Rgb,
@@ -147,15 +161,23 @@ export const Picker = () => {
     hwb: Hwb,
   }[model]
 
-  return (
-    <div>
-      <Sliders onChange={onChange} model={model} />
-      <ColorSlider name="alpha" step={0.01} max={1} onChange={onChange} model={model} />
+  if (model) return (
+    <div className="color-picker-wrapper">
+      <div className="color-picker">
+        <div className="color-swatch" />
+        <div className="color-sliders">
+          <Sliders onChange={setSliderInput} model={model} />
+          <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={model} />
+        </div>
+      </div>
 
-      <Input name="hsl" type="text" onChange={onChangeText} />
-      <Input name="hwb" type="text" onChange={onChangeText} />
-      <Input name="rgb" type="text" onChange={onChangeText} />
-      <Input name="hex" type="text" onChange={onChangeText} />
+      <div className="color-inputs">
+        <CodeInput name="hex" onChange={onChangeText} />
+        <CodeInput name="rgb" onChange={onChangeText} />
+        <CodeInput name="hsl" onChange={onChangeText} />
+        <CodeInput name="hwb" onChange={onChangeText} />
+      </div>
     </div>
   )
+  return null
 }
