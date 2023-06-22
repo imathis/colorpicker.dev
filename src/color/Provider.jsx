@@ -1,13 +1,10 @@
 import { ColorContext } from './Context'
 import { useColorHooks } from './useColor'
 import { useForm, FormProvider } from 'react-hook-form'
-import { randomColor } from './helpers'
 
 export const ColorProvider = (props) => {
-  const value = useColorHooks({ color: randomColor() })
-  const methods = useForm({
-    /* defaultValues: value.colorObject(value.color) */
-  })
+  const value = useColorHooks()
+  const methods = useForm()
 
   return (
     <FormProvider {...methods}>

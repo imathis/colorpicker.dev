@@ -1,17 +1,10 @@
-import Color from 'color'
 import React from 'react'
 import { ColorContext } from './Context'
-import { getRoot, setRoot } from './helpers'
+import { randomColor, Color, getRoot, setRoot, colorModels as models, colorModel } from './helpers'
 
-const models = {
-  hsl: ['hue', 'saturationl', 'lightness', 'alpha'],
-  hwb: ['hue', 'white', 'wblack', 'alpha'],
-  rgb: ['red', 'green', 'blue', 'alpha'],
-}
-
-const updateModelVars = ({ color, model = color.model }) => {
-  models[model].forEach((part) => {
-    setRoot(part, color[part]())
+const updateModelVars = ({ color }) => {
+  Object.keys(color.modelObject()).forEach((part) => {
+    setRoot(part, color[part])
   })
 }
 
@@ -25,7 +18,7 @@ const getCurrentColor = () => {
 }
 
 const setRootColor = (color) => {
-  setRoot('color', color.alpha(1).toString().replaceAll(',','').replace(')', ` / ${color.alpha()})`))
+  setRoot('color', color.rgb)
 }
 
 export const useColorHooks = (options = {}) => {
@@ -37,18 +30,20 @@ export const useColorHooks = (options = {}) => {
     if (models[m]) { 
       setRoot('model', m)
       setModelValue(m) 
-      updateModelVars({ color: c, model: m })
+      updateModelVars({ color: c })
     }
   }, [color])
 
-  const setColor = React.useCallback((c) => {
-    let newColor = (typeof c === 'string') ? Color(c) : c
+  const setColor = React.useCallback((newColor) => {
+    /* let newColor = (typeof c === 'string') ? Color(c) : c */
     
     // Initially there won't be a model, so set it
-    if (!model && models[newColor.model]) setModel(newColor.model, newColor)
-    else if (model && newColor.model !== model) {
-      newColor = newColor[model]()
+    if (!model && models[newColor.model]) {
+      setModel(newColor.model, newColor)
     }
+    /* else if (model && newColor.model !== model) { */
+    /*   newColor = newColor[model]() */
+    /* } */
 
     updateModelVars({ color: newColor })
     setColorValue(newColor)
@@ -57,15 +52,15 @@ export const useColorHooks = (options = {}) => {
   }, [model, setModel])
 
   React.useEffect(() => {
-    if (initialColor && !color) setColor(initialColor)
+    if (!color) {
+      setColor(initialColor || randomColor())
+    }
   }, [color, setColor, initialColor])
 
   const adjustColor = React.useCallback((prop, value) => {
     setRoot(prop, value)
-    const newColor = Color[getRoot('model')](...getCurrentColor()) 
-    setColor(newColor)
-    return newColor
-  }, [setColor])
+    return setColor(color.set(prop, value))
+  }, [setColor, color])
 
   return {
     model,
