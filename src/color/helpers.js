@@ -6,16 +6,16 @@ export const colorModels = {
 
 const toString = {
   hwb: (parts) => {
-    const main = `${parts[0]}, ${parts[1]}%, ${parts[2]}%`
+    const main = `${parts[0]} ${parts[1]}% ${parts[2]}%`
     return parts[3] < 1 ? `hwb(${main} / ${parts[3]})` : `hwb(${main})`
   },
   hsl: (parts) => {
-    const main = `${parts[0]}, ${parts[1]}%, ${parts[2]}%`
-    return parts[3] < 1 ? `hsla(${main}, ${parts[3]})` : `hsl(${main})` 
+    const main = `${parts[0]} ${parts[1]}% ${parts[2]}%`
+    return parts[3] < 1 ? `hsla(${main} / ${parts[3]})` : `hsl(${main})` 
   },
   rgb: (parts) => {
-    const main = parts.join(', ')
-    return parts[3] < 1 ? `rgba(${main})` : `rgb(${main})`
+    const main = parts.slice(0,3).join(' ')
+    return parts[3] < 1 ? `rgba(${main} / ${parts[3]})` : `rgb(${main})`
   },
 }
 

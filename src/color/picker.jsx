@@ -174,10 +174,10 @@ export const Picker = () => {
         <CodeInput name="rgb" onChange={onChangeText} />
         <CodeInput name="hsl" onChange={onChangeText} />
         <CodeInput name="hwb" onChange={onChangeText} />
-        <span />
-        <button type="button" onClick={()=>setModel('rgb')}>rgb</button>
-        <button type="button" onClick={()=>setModel('hsl')}>hsl</button>
-        <button type="button" onClick={()=>setModel('hwb')}>hwb</button>
+        {/* <span /> */}
+        {/* <button type="button" onClick={()=>setModel('rgb')}>rgb</button> */}
+        {/* <button type="button" onClick={()=>setModel('hsl')}>hsl</button> */}
+        {/* <button type="button" onClick={()=>setModel('hwb')}>hwb</button> */}
       </div>
     </div>
   )
