@@ -5,18 +5,19 @@ export const colorModels = {
 }
 
 const toString = {
-  hwb: (parts) => {
-    const main = `${parts[0]} ${parts[1]}% ${parts[2]}%`
-    return parts[3] < 1 ? `hwb(${main} / ${parts[3]})` : `hwb(${main})`
+  hwb: ({ hue, white, wblack, alpha }) => {
+    const main = `${hue} ${white}% ${wblack}%`
+    return alpha < 1 ? `hwb(${main} / ${alpha})` : `hwb(${main})`
   },
-  hsl: (parts) => {
-    const main = `${parts[0]} ${parts[1]}% ${parts[2]}%`
-    return parts[3] < 1 ? `hsla(${main} / ${parts[3]})` : `hsl(${main})` 
+  hsl: ({ hue, saturationl, lightness, alpha }) => {
+    const main = `${hue} ${saturationl}% ${lightness}%`
+    return alpha < 1 ? `hsla(${main} / ${alpha})` : `hsl(${main})` 
   },
-  rgb: (parts) => {
-    const main = parts.slice(0,3).join(' ')
-    return parts[3] < 1 ? `rgba(${main} / ${parts[3]})` : `rgb(${main})`
+  rgb: ({ red, green, blue, alpha }) => {
+    const main = [red, green, blue].join(' ')
+    return alpha < 1 ? `rgba(${main} / ${alpha})` : `rgb(${main})`
   },
+  hex: ({ hex }) => hex,
 }
 
 const getRandom = (min, max, unit) => {
@@ -29,33 +30,61 @@ export const getRoot = (prop) => document.documentElement.style.getPropertyValue
 
 // Matches rgba? hsla? hwb and really any xxxa?(xxx xxx xxx xxx) format. Optional alpha capture
 const ColorTest = (type) => {
+  if (type === 'hex') {
+    return new RegExp('^#(\\b(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\\b)$')
+  }
   const num = '([\\d.]+)' // number characters with decimals
   const percent = '([\\d.]+%)' // number characters with decimals
-  const sep = '\\D+'      // non number characters
+  const sep = '\\s*(?:,|\\s)\\s*'      // non number characters
   const alph = '\\d\\.{0,1}\\d*' // number decimal number
+  const alphsep = '\\s*(?:,|/)\\s*'
   const main = {
     rgb: [num, num, num],
     hsl: [num, percent, percent],
     hwb: [num, percent, percent],
   }[type]
-  return new RegExp(`^${type}a?\\(${main.join(sep)}(?:${sep}(${alph}))?\\)$`)
+  return new RegExp(`^${type}a?\\(${main.join(sep)}(?:${alphsep}(${alph}))?\\)$`)
+}
+
+export const colorPatterns = {
+  hsl: ColorTest('hsl'),
+  hwb: ColorTest('hwb'),
+  rgb: ColorTest('rgb'),
+  hex: ColorTest('hex'),
 }
 
 const isColor = {
   hsl: (str) => str.match(ColorTest('hsl'))?.slice(1) || null,
   hwb: (str) => str.match(ColorTest('hwb'))?.slice(1) || null,
   rgb: (str) => str.match(ColorTest('rgb'))?.slice(1) || null,
-  hex: (str) => str.match(/^#([A-Fa-f0-9]+)$/) ? str : null,
+  hex: (str) => str.match(ColorTest('hex'))?.slice(1) || null,
+}
+
+const colorArray = (color, model = color.slice(0, 3)) => {
+  const is = isColor[model](color)
+  return is && is?.filter((n) => !!n).map((v) => Number.parseFloat(v))
 }
 
 const colorParts = (color, model = color.slice(0, 3)) => {
-  const is = isColor[model](color)
-  return is?.filter((n) => !!n).map((v) => Number.parseFloat(v)) || null
+  try {
+    if (model === 'hex' || color.startsWith('#')) return { hex: color }
+    const arr = colorArray(color, model)
+    return colorModels[model].reduce((acc, part, index) => {
+      return {...acc, [part]: part === 'alpha' ? arr[index] || 1 : arr[index] }
+    }, {})
+  } catch (e) {
+    console.error(e)
+    throw new Error(`Unsupported Color Error: Color \`${color}\` is not a supported color format.`)
+  } 
 }
 
-const rgbaToHex = (rgba) => `#${rgba.map(
-  (n, i) => (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n)).toString(16).padStart(2, '0').replace('NaN', '')
-).join('')}`
+const rgbaToHex = ({ red, green, blue, alpha }) => {
+  const colors = [red, green, blue]
+  if (alpha < 1) colors.push(alpha) 
+  return `#${colors.map(
+    (n, i) => (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n)).toString(16).padStart(2, '0').replace('NaN', '')
+  ).join('')}`
+}
 
 const toHslwb = ({ red: r, green: g, blue: b, alpha: a }) => {
   r /= 255
@@ -94,10 +123,12 @@ const toHslwb = ({ red: r, green: g, blue: b, alpha: a }) => {
   w = Math.round(w * 1000) / 10
   wb = Math.round(wb * 1000) / 10
 
-  const hsl = toString.hsl([h,s,l,a])
-  const hwb = toString.hwb([h,w,wb,a])
+  const obj = { hue: h, saturationl: s, lightness: l, white: w, wblack: wb, alpha: a }
 
-  return { hsl, hwb, hue: h, saturationl: s, lightness: l, white: w, wblack: wb }
+  const hsl = toString.hsl(obj)
+  const hwb = toString.hwb(obj)
+
+  return { hsl, hwb, ...obj }
 }
 
 const toRgb = (str) => {
@@ -108,26 +139,24 @@ const toRgb = (str) => {
     const rgba = colorParts(color)
     document.body.removeChild(el)
 
-    const [red, green, blue, alpha = 1] = rgba
-    const rgb = toString.rgb([red, green, blue, alpha])
+    const rgb = toString.rgb(rgba)
     const hex = rgbaToHex(rgba)
 
-    return { red, blue, green, alpha, rgb, hex }
+    return { ...rgba, rgb, hex }
   } catch (e) {
-    console.log(e)
-    return null
+    throw new Error(`Invalid Color Error: Browser does not recognize \`${str}\` as a valid color.`)
   }
 }
 
 const inbound = (num, opts = {}) => {
-  const { max = 100, min = 0 } = opts
+  const { min = 0, max = 100 } = opts
   return min <= num && num <= max
 }
 
 const testHxx = (color, model) => {
-  const parts = colorParts(color, model)
-  if (!parts) return false
-  const [hue, sw, lwb, alpha] = parts
+  const arr = colorArray(color, model)
+  if (!arr) return false
+  const [hue, sw, lwb, alpha] = arr
   return inbound(hue, { max: 360 })
       && inbound(sw)
       && inbound(lwb)
@@ -135,9 +164,9 @@ const testHxx = (color, model) => {
 }
 
 const testRgb = (color, model) => {
-  const parts = colorParts(color, model)
-  if (!parts) return false
-  const [r, g, b, alpha] = parts
+  const arr = colorArray(color, model)
+  if (!arr) return false
+  const [r, g, b, alpha] = arr
   return inbound(r, { max: 255 })
     && inbound(g, { max: 255 }) 
     && inbound(b, { max: 255 }) 
@@ -156,75 +185,64 @@ export const validate = {
   hex: (str) => testHex(str, 'hex'),
 }
 
-export const colorModel = (str) => (
-  Object.keys(isColor).find((type) => isColor[type](str))
-) 
-
-const reduceModel = (colorObj, model = colorObj.model) => {
-  return colorModels[model].reduce((acc, part) => {
-    return {...acc, [part]: colorObj[part] }
-  }, {})
+export const colorModel = (str) => {
+  const model = Object.keys(isColor).find((type) => isColor[type](str))
+  if (!model) {
+    throw new Error(`Color Error: No matching color model could be found for ${str}`)
+  }
+  return model
 }
-
-// Return a color split into its many named in an object
-const modelParts = (color, model) => {
-  if (model === 'hex') return { hex: color }
-  const parts = colorParts(color, model)
-  return parts.reduce((acc, part, index) => {
-    return {...acc, [colorModels[model][index]]: part }
-  }, {})
-} 
 
 export const validColor = (str) => !!colorModel(str)
 
-export const Color = (color, model = colorModel(color)) => {
-  if (!model) return null
-  const rgb = toRgb(color)
-  const hslwb = toHslwb(rgb)
-  const colorObj = { 
-    model,
-    ...hslwb,
-    ...rgb,
-    // ensure that conversions don't override initial model with rounding errors
-    ...modelParts(color, model),
+const adjustColor = (color, prop, value) => {
+  // If we are setting a color from a string all at once rgb, hex, hsla, hwb as a string
+  const stringColor = Object.keys(validate).includes(prop)
+  if (stringColor && validColor(value)) {
+    const newColor = Color(value, prop)
+    return Color(newColor[color.model])
   }
 
-  const set = (attr, value) => {
-    const parts = reduceModel(colorObj)
-    if (typeof parts[attr] !== 'undefined') {
-      parts[attr] = attr === 'alpha' ? Number.parseFloat(value, 10) : Number.parseInt(value, 10)
-      const str = toString[model](Object.values(parts))
-      const newColor = Color(str, model)
-      return newColor
-    }
-    return null
+  if (prop === 'model' && Object.keys(validate).includes(value)) {
+    /* const newColor = Color(color[value]) */
+    /* return model ? {...newColor, model } : newColor */
+    return Color(color[value], value)
   }
 
-  return {
-    ...colorObj,
-    toString: () => colorObj[model],
-    modelObject: () => reduceModel(colorObj),
-    set,
-  }
+  // Setting individual attributes of a color
+  return Color(toString[color.model]({ ...color, [prop]: value }), color.model)
 }
 
-export const expandColor = (color) => {
+export const Color = (
+  color, m,
+) => {
   try {
-    const model = colorModel(color)
-    if (!model) return null
+    const model = m || colorModel(color)
+    if (!model) throw new Error(`No matching color model found for ${color}`)
+
     const rgb = toRgb(color)
     const hslwb = toHslwb(rgb)
-    return { ...hslwb, ...rgb, ...modelParts(color, model) }
-  } catch (e) {
-    return null
-  }
-}
+    const parts = colorParts(color, model === 'hex' ? 'rgb' : model)
+    const colorObj = { 
+      model,
+      ...hslwb,
+      ...rgb,
+      // ensure that conversions don't override initial model with rounding errors
+      ...parts,
+      [model]: color,
+    }
 
-export const getSwatchColor = () => {
-  const { backgroundColor } = window.getComputedStyle(document.querySelector('.color-swatch'))
-  return expandColor(backgroundColor)
+    return {
+      ...colorObj,
+      adjust: (...args) => adjustColor(colorObj, ...args),
+      toString: () => colorObj[colorObj.model],
+      modelObject: () => parts,
+    }
+  } catch (e) {
+    console.error(e.message)
+  }
 }
 
 export const randomColor = () => {
-  return Color(`hsl(${getRandom(0,360)}, 100%, 50%, 1)`)
+  return Color(`hsl(${getRandom(0,360)} 100% 50%)`)
 }

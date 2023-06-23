@@ -7,10 +7,13 @@ const codeTextProps = {
   spellCheck: "false",
 }
 
-const Input = ({ onChange: onChangeProp, isCode, ...props }) => {
-  const { register } = useFormContext()
-  const onChange = ({ target: { name, value } }) => {
-    if (onChangeProp) { onChangeProp([name, value])}
+const Input = ({ onChange: onChangeProp, ...props }) => {
+  const { register, getFieldState, setError } = useFormContext()
+  const onChange = ({ target }) => {
+    const { name, value } = target
+    if (target.checkValidity()) {
+      if (onChangeProp) { onChangeProp([name, value])}
+    }
   }
   return <input 
     {...register(props.name, { onChange })}
@@ -19,7 +22,7 @@ const Input = ({ onChange: onChangeProp, isCode, ...props }) => {
 }
 
 const CodeInput = (props) => (
-  <Input type="text" {...props} {...codeTextProps} />
+  <Input type="text" {...props} {...codeTextProps} required />
 )
 
 export {

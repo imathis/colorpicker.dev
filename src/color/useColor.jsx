@@ -1,19 +1,10 @@
 import React from 'react'
 import { ColorContext } from './Context'
-import { randomColor, Color, getRoot, setRoot, colorModels as models, colorModel } from './helpers'
+import { Color, randomColor, setRoot, colorModels } from './helpers'
 
 const updateModelVars = ({ color }) => {
   Object.keys(color.modelObject()).forEach((part) => {
     setRoot(part, color[part])
-  })
-}
-
-const getCurrentColor = () => {
-  return models[getRoot('model')].map((part) => {
-    const value = getRoot(part)
-    return (part === 'alpha') 
-      ? Number.parseFloat(value, 10)
-      : Number.parseInt(value, 10)
   })
 }
 
@@ -27,23 +18,22 @@ export const useColorHooks = (options = {}) => {
   const [color, setColorValue] = React.useState()
 
   const setModel = React.useCallback((m, c = color) => {
-    if (models[m]) { 
+    if (colorModels[m]) { 
       setRoot('model', m)
       setModelValue(m) 
-      updateModelVars({ color: c })
+      const newColor = c.adjust('model', m)
+      setColorValue(newColor)
+      if (color && color.model !== m) updateModelVars({ color: newColor })
     }
-  }, [color])
+  }, [color, setColorValue])
 
-  const setColor = React.useCallback((newColor) => {
-    /* let newColor = (typeof c === 'string') ? Color(c) : c */
+  const setColor = React.useCallback((c) => {
+    let newColor = (typeof c === 'string') ? Color(c) : c
     
     // Initially there won't be a model, so set it
-    if (!model && models[newColor.model]) {
+    if (!model && colorModels[newColor.model]) {
       setModel(newColor.model, newColor)
     }
-    /* else if (model && newColor.model !== model) { */
-    /*   newColor = newColor[model]() */
-    /* } */
 
     updateModelVars({ color: newColor })
     setColorValue(newColor)
@@ -57,14 +47,13 @@ export const useColorHooks = (options = {}) => {
     }
   }, [color, setColor, initialColor])
 
-  const adjustColor = React.useCallback((prop, value) => {
-    setRoot(prop, value)
-    return setColor(color.set(prop, value))
+  const adjustColor = React.useCallback((...args) => {
+    return setColor(color.adjust(...args))
   }, [setColor, color])
 
   return {
     model,
-    models,
+    colorModels,
     setModel,
     color,
     setColor,

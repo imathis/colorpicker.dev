@@ -2,7 +2,7 @@ import React from 'react'
 import { useColor } from './useColor'
 import { Input, CodeInput } from './inputs'
 import { useFormContext } from 'react-hook-form'
-import { validate } from './helpers'
+import { colorModels, validate, colorPatterns } from './helpers'
 
 const trackBg = ({
   type = '',
@@ -66,13 +66,13 @@ const ColorSlider = ({ name, model, ...props }) => (
     <div className="slider-track" >
       <Input type="range" name={name} min={0} max={100} step={1} {...props} style={{ background: background[model][name] }} />
     </div>
-    <Input type="number" name={`${name}Num`} min={0} max={100} step={1} {...props} />
+    <Input type="number" name={`${name}Num`} min={0} max={100} step={0.1} {...props} />
   </div>
 )
 
 const Hsl = (props) => (
   <>
-    <ColorSlider name="hue" max={360} {...props} />
+    <ColorSlider name="hue" max={360} step={1} {...props} />
     <ColorSlider name="saturationl" {...props} />
     <ColorSlider name="lightness" {...props} />
   </>
@@ -80,7 +80,7 @@ const Hsl = (props) => (
 
 const Hwb = (props) => (
   <>
-    <ColorSlider name="hue" max={360} {...props} />
+    <ColorSlider name="hue" max={360} step={1} {...props} />
     <ColorSlider name="white" {...props} />
     <ColorSlider name="wblack" {...props} />
   </>
@@ -95,9 +95,9 @@ const Rgb = (props) => (
 )
 
 export const Picker = () => {
-  const { model, color, adjustColor, models, setModel, setColor } = useColor()
+  const { color, adjustColor, setModel, setColor } = useColor()
   const { setValue } = useFormContext()
-  const init = React.useRef(true)
+  const model = React.useRef()
   const swatch = React.useRef(true)
 
   const updateText = React.useCallback(({ newColor, fromInput }) => {
@@ -114,13 +114,11 @@ export const Picker = () => {
 
   // When a color is set, update each slider and number input
   const updateSliders = React.useCallback(({ newColor }) => {
-    if (model) {
-      models[model].forEach((prop) => {
-        setValue(prop, newColor[prop])
-        setValue(`${prop}Num`, newColor[prop])
-      })
-    }
-  }, [setValue, model, models])
+    colorModels[newColor.model].forEach((prop) => {
+      setValue(prop, newColor[prop])
+      setValue(`${prop}Num`, newColor[prop])
+    })
+  }, [setValue])
 
   // When a slider (or matching number input) changes:
   // - Update the matching input (number or slider)
@@ -134,50 +132,46 @@ export const Picker = () => {
   }, [updateText, adjustColor, setValue])
 
   const onChangeText = React.useCallback(([name, value]) => {
-    try {
-      const newColor = setColor(value)
-      updateText({ newColor, fromInput: name })
-      updateSliders({ newColor })
-    } catch (e) {
-      console.log(e)
-      console.log('cannot create color')
-    }
-  }, [setColor, updateText, updateSliders])
+    const newColor = adjustColor(name, value)
+    setColor(newColor)
+    updateText({ newColor, fromInput: name })
+    updateSliders({ newColor })
+  }, [setColor, adjustColor, updateText, updateSliders])
 
   // On initial load, or when model changes, update inputs to match new color model
   React.useEffect(() => {
-    if ((init.current && color) || (!init.current && color?.model !== model)) {
+    if (color && (!model.current || model.current !== color?.model)) {
       updateSliders({ newColor: color })
       updateText({ newColor: color })
-      init.current = false
+      model.current = color.model
     }
-  }, [model, color, init, updateText, updateSliders])
+  }, [model, color, updateText, updateSliders])
 
   const Sliders = {
     rgb: Rgb,
     hsl: Hsl,
     hwb: Hwb,
-  }[model]
+  }[color?.model]
 
-  if (model) return (
+  if (color) return (
     <div className="color-picker-wrapper">
       <div className="color-picker">
         <div className="color-swatch" ref={swatch} />
         <div className="color-sliders">
-          <Sliders onChange={setSliderInput} model={model} />
-          <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={model} />
+          <Sliders onChange={setSliderInput} model={color.model} />
+          <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
         </div>
       </div>
 
       <div className="color-inputs">
-        <CodeInput name="hex" onChange={onChangeText} />
-        <CodeInput name="rgb" onChange={onChangeText} />
-        <CodeInput name="hsl" onChange={onChangeText} />
-        <CodeInput name="hwb" onChange={onChangeText} />
-        {/* <span /> */}
-        {/* <button type="button" onClick={()=>setModel('rgb')}>rgb</button> */}
-        {/* <button type="button" onClick={()=>setModel('hsl')}>hsl</button> */}
-        {/* <button type="button" onClick={()=>setModel('hwb')}>hwb</button> */}
+        <CodeInput name="hex" onChange={onChangeText} pattern={colorPatterns.hex.source} />
+        <CodeInput name="rgb" onChange={onChangeText} pattern={colorPatterns.rgb.source} />
+        <CodeInput name="hsl" onChange={onChangeText} pattern={colorPatterns.hsl.source} />
+        <CodeInput name="hwb" onChange={onChangeText} pattern={colorPatterns.hwb.source} />
+        <span />
+        <button type="button" onClick={()=>setModel('rgb')}>rgb</button>
+        <button type="button" onClick={()=>setModel('hsl')}>hsl</button>
+        <button type="button" onClick={()=>setModel('hwb')}>hwb</button>
       </div>
     </div>
   )
