@@ -155,24 +155,29 @@ export const Picker = () => {
 
   if (color) return (
     <div className="color-picker-wrapper">
-      <div className="color-picker">
+      <div className="color-swatch-wrapper">
         <div className="color-swatch" ref={swatch} />
+        <CodeInput name="hex" onChange={onChangeText} pattern={colorPatterns.hex.source} />
+      </div>
+      <div className="color-picker">
+
         <div className="color-sliders">
           <Sliders onChange={setSliderInput} model={color.model} />
           <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
         </div>
+
+        <div className="color-inputs">
+          <CodeInput name="rgb" onChange={onChangeText} pattern={colorPatterns.rgb.source} />
+          <CodeInput name="hsl" onChange={onChangeText} pattern={colorPatterns.hsl.source} />
+          <CodeInput name="hwb" onChange={onChangeText} pattern={colorPatterns.hwb.source} />
+        </div>
+        <div className="color-inputs">
+          <button type="button" onClick={()=>setModel('rgb')}>rgb</button>
+          <button type="button" onClick={()=>setModel('hsl')}>hsl</button>
+          <button type="button" onClick={()=>setModel('hwb')}>hwb</button>
+        </div>
       </div>
 
-      <div className="color-inputs">
-        <CodeInput name="hex" onChange={onChangeText} pattern={colorPatterns.hex.source} />
-        <CodeInput name="rgb" onChange={onChangeText} pattern={colorPatterns.rgb.source} />
-        <CodeInput name="hsl" onChange={onChangeText} pattern={colorPatterns.hsl.source} />
-        <CodeInput name="hwb" onChange={onChangeText} pattern={colorPatterns.hwb.source} />
-        <span />
-        <button type="button" onClick={()=>setModel('rgb')}>rgb</button>
-        <button type="button" onClick={()=>setModel('hsl')}>hsl</button>
-        <button type="button" onClick={()=>setModel('hwb')}>hwb</button>
-      </div>
     </div>
   )
   return null

@@ -12,6 +12,35 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --track-bg: rgba(0,0,0,0.5);
+  --track-check: rgba(255,255,255,0.2);
+  --track-check-alt: transparent;
+  --track-check-gradient: linear-gradient(45deg,
+      var(--track-check) 25%,
+      var(--track-check-alt) 25%,
+      var(--track-check-alt) 75%,
+      var(--track-check) 75%,
+      var(--track-check)
+    );
+  --track-box-shadow: 
+    rgba(0,0,0,0.3) 0 1px inset,
+    rgba(255,255,255,0.2) 0 1px;
+
+  --slider-box-shadow: 
+    rgba(255,255,255,0.3) 0 1px 2px inset,
+    rgba(0,0,0,0.3) 0 -1px 1px inset;
+
+  --input-box-shadow: rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0px inset;
+  --input-bg: rgba(0,0,0,0.3);
+  --input-color: rgba(255,255,255,0.8);
+  --input-text-shadow: rgba(0,0,0,0.5) 0 2px 1px;
+
+  --input-invalid-bg: rgba(102,0,0,0.3);
+  --input-invalid-box-shadow: rgba(255,127,127,0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
+  --input-invalid-color: #ff0f0f;
+}
+* {
+  box-sizing: border-box;
 }
 
 a {
@@ -58,7 +87,25 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #efefef;
+    --track-bg: rgba(0,0,0,0.05);
+    --track-check: rgba(0,0,0,0.2);
+    --track-box-shadow: 
+      rgba(0,0,0,0.3) 0 1px inset,
+      rgba(255,255,255,0.6) 0 1px;
+
+    --slider-box-shadow: 
+      rgba(255,255,255,0.6) 0 1px 2px inset,
+      rgba(0,0,0,0.3) 0 -1px 1px inset;
+
+    --input-box-shadow: #fff 0 1px 0, rgba(0,0,0,0.2) 0 1px 7px 0px inset;
+    --input-bg: rgba(0,0,0,0.05);
+    --input-color: rgba(0,0,0,0.8);
+    --input-text-shadow: rgba(255,255,255,1) 0 1px 1px;
+
+    --input-invalid-bg: rgba(214 0 0 / 0.19);
+    --input-invalid-box-shadow: rgba(214 0 0 / 0.1) 0 1px 0, rgba(138 0 0 / 0.8) 0 1px 7px 0px inset;
+    --input-invalid-color: #d60000;
   }
   a:hover {
     color: #747bff;
