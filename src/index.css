@@ -39,6 +39,10 @@
   --input-invalid-box-shadow: rgba(255,127,127,0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
   --input-invalid-color: #ff0f0f;
 
+  --input-copied-bg: rgba(10, 102, 0, 0.3);
+  --input-copied-box-shadow: rgba(140, 255, 127, 0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
+  --input-copied-color: #27ff0f;
+
   --thumb-box-shadow: 
     0 0 0 3px rgba(var(--red), var(--green), var(--blue), 0.3) inset,
     0 0 0 3px rgba(255, 255, 255, 1) inset,
@@ -118,6 +122,10 @@ button:focus-visible {
     --input-invalid-bg: rgba(214 0 0 / 0.19);
     --input-invalid-box-shadow: rgba(214 0 0 / 0.1) 0 1px 0, rgba(138 0 0 / 0.8) 0 1px 7px 0px inset;
     --input-invalid-color: #d60000;
+
+    --input-copied-bg: rgba(21 214 0 / 0.19);
+    --input-copied-box-shadow: rgba(21 214 0 / 0.1) 0 1px 0, rgba(14 138 0 / 0.8) 0 1px 7px 0px inset;
+    --input-copied-color: #15d600;
   }
   a:hover {
     color: #747bff;
