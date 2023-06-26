@@ -80,7 +80,7 @@ input[type=number]::-webkit-outer-spin-button {
 .color-inputs {
   display: grid;
   gap: 8px;
-  grid-auto-columns: 150px;
+  grid-auto-columns: minmax(150px, 250px);
   grid-auto-flow: column;
 }
 

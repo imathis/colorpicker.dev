@@ -2,7 +2,7 @@ import React from 'react'
 import { useColor } from './useColor'
 import { Input, CodeInput } from './inputs'
 import { useFormContext } from 'react-hook-form'
-import { colorModels, validate, colorPatterns } from './helpers'
+import { colorModels, colorPatterns } from './helpers'
 
 const trackBg = ({
   type = '',
