@@ -169,14 +169,18 @@ export const Picker = () => {
       <div className="color-picker">
 
         <div className="color-sliders">
+          <span style={{ display: 'block', height: '20px' }}>HSL</span>
           <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hsl" />
           <ColorSlider name="saturationl" onChange={setSliderInput} model="hsl" />
           <ColorSlider name="lightness" onChange={setSliderInput} model="hsl" />
+          <span style={{ display: 'block', height: '20px' }}>(H)WB</span>
           <ColorSlider name="white" onChange={setSliderInput} model="hwb" />
           <ColorSlider name="wblack" onChange={setSliderInput} model="hwb" />
+          <span style={{ display: 'block', height: '20px' }}>RGB</span>
           <ColorSlider name="red" onChange={setSliderInput} max={255} model="rgb" />
           <ColorSlider name="green" onChange={setSliderInput} max={255} model="rgb" />
           <ColorSlider name="blue" onChange={setSliderInput} max={255} model="rgb" />
+          <span style={{ display: 'block', height: '20px' }}>Alpha</span>
           <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
         </div>
 
