@@ -38,6 +38,12 @@
   --input-invalid-bg: rgba(102,0,0,0.3);
   --input-invalid-box-shadow: rgba(255,127,127,0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
   --input-invalid-color: #ff0f0f;
+
+  --thumb-box-shadow: 
+    0 0 0 3px rgba(var(--red), var(--green), var(--blue), 0.5) inset,
+    0 0 0 3px #fff inset,
+    0 0 0 4px rgb(0 0 0 / 0.5) inset,
+    0 0 0 1px rgb(0 0 0 / 0.5);
 }
 * {
   box-sizing: border-box;
@@ -96,7 +102,7 @@ button:focus-visible {
 
     --slider-box-shadow: 
       rgba(255,255,255,0.6) 0 1px 2px inset,
-      rgba(0,0,0,0.3) 0 -1px 1px inset;
+      rgba(0,0,0,0.3) 0 0 0 1px inset;
 
     --input-box-shadow: #fff 0 1px 0, rgba(0,0,0,0.2) 0 1px 7px 0px inset;
     --input-bg: rgba(0,0,0,0.05);

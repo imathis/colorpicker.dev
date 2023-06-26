@@ -226,13 +226,13 @@ export const Color = (
 
     const rgb = toRgb(color)
     const hslwb = toHslwb(rgb)
-    const parts = colorParts(color, model === 'hex' ? 'rgb' : model)
+    const current = colorParts(color, model === 'hex' ? 'rgb' : model)
     const colorObj = { 
       model,
       ...hslwb,
       ...rgb,
       // ensure that conversions don't override initial model with rounding errors
-      ...parts,
+      ...current,
       [model]: color,
     }
 
@@ -240,7 +240,6 @@ export const Color = (
       ...colorObj,
       adjust: (...args) => adjustColor(colorObj, ...args),
       toString: () => colorObj[colorObj.model],
-      modelObject: () => parts,
     }
   } catch (e) {
     console.error(e.message)

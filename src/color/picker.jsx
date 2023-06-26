@@ -120,7 +120,7 @@ export const Picker = () => {
   // When a color is set, update each slider and number input
   const updateSliders = React.useCallback(({ newColor, fromInput }) => {
     allColorParts.forEach((prop) => {
-      if (prop !== fromInput) setValue(prop, newColor[prop])
+      setValue(prop, newColor[prop])
       if (`${prop}Num` !== fromInput) setValue(`${prop}Num`, newColor[prop])
     })
   }, [setValue])
@@ -174,6 +174,7 @@ export const Picker = () => {
           <ColorSlider name="saturationl" onChange={setSliderInput} model="hsl" />
           <ColorSlider name="lightness" onChange={setSliderInput} model="hsl" />
           <span style={{ display: 'block', height: '20px' }}>(H)WB</span>
+          <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hwb" />
           <ColorSlider name="white" onChange={setSliderInput} model="hwb" />
           <ColorSlider name="wblack" onChange={setSliderInput} model="hwb" />
           <span style={{ display: 'block', height: '20px' }}>RGB</span>
