@@ -66,7 +66,7 @@ const isColor = {
 
 const colorArray = (color, model = color.slice(0, 3)) => {
   const is = isColor[model](color)
-  return is && is?.filter((n) => !!n).map((v) => Number.parseFloat(v))
+  return is && is?.map((n) => (typeof n === 'undefined') ? 1 : Number.parseFloat(n, 10))
 }
 
 const colorParts = (color, model = color.slice(0, 3)) => {
@@ -74,7 +74,7 @@ const colorParts = (color, model = color.slice(0, 3)) => {
     if (model === 'hex' || color.startsWith('#')) return { hex: color }
     const arr = colorArray(color, model)
     return colorModels[model].reduce((acc, part, index) => {
-      return {...acc, [part]: part === 'alpha' ? arr[index] || 1 : arr[index] }
+      return {...acc, [part]: arr[index] }
     }, {})
   } catch (e) {
     console.error(e)

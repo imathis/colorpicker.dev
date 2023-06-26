@@ -1,8 +1,13 @@
 import React from 'react'
 import { useColor } from './useColor'
 import { Input, CodeInput } from './inputs'
-import { useFormContext } from 'react-hook-form'
-import { colorModels, colorPatterns, allColorParts } from './helpers'
+import { colorPatterns, allColorParts } from './helpers'
+
+const setValue = (name, value) => {
+  Array.prototype.forEach.call(document.querySelectorAll(`[name=${name}]`), (el) => {
+    el.value = value
+  })
+}
 
 const trackBg = ({
   type = '',
@@ -68,40 +73,16 @@ const ColorSlider = ({ name, model, onChange: onChangeProp, ...props }) => {
   return (
     <div className="color-slider">
       <div className="slider-track" >
-        <Input type="range" name={name} min={0} max={100} step={1} onChange={onChange} {...props} style={{ background: background[model][name] }} />
+        <Input type="range" data-model={model} name={name} min={0} max={100} step={1} onChange={onChange} {...props} style={{ background: background[model][name] }} />
       </div>
-      <Input type="number" name={`${name}Num`} min={0} max={100} step={0.1} onChange={onChange} {...props} />
+      <Input type="number" data-model={model} name={`${name}Num`} min={0} max={100} step={0.1} onChange={onChange} {...props} />
     </div>
   )
 }
 
-const Hsl = (props) => (
-  <>
-    <ColorSlider name="hue" max={360} step={1} {...props} />
-    <ColorSlider name="saturationl" {...props} />
-    <ColorSlider name="lightness" {...props} />
-  </>
-)
-
-const Hwb = (props) => (
-  <>
-    <ColorSlider name="hue" max={360} step={1} {...props} />
-    <ColorSlider name="white" {...props} />
-    <ColorSlider name="wblack" {...props} />
-  </>
-)
-
-const Rgb = (props) => (
-  <>
-    <ColorSlider name="red" max={255} {...props} />
-    <ColorSlider name="green" max={255} {...props} />
-    <ColorSlider name="blue" max={255} {...props} />
-  </>
-)
-
 export const Picker = () => {
   const { color, adjustColor, setModel, setColor } = useColor()
-  const { setValue } = useFormContext()
+  /* const { setValue } = useFormContext() */
   const model = React.useRef()
   const swatch = React.useRef(true)
 
@@ -115,7 +96,7 @@ export const Picker = () => {
     Object.entries(inputs).filter(([k])=> k !== fromInput).forEach(([k, v]) => {
       setValue(k, v)
     })
-  }, [setValue])
+  }, [])
 
   // When a color is set, update each slider and number input
   const updateSliders = React.useCallback(({ newColor, fromInput }) => {
@@ -123,7 +104,7 @@ export const Picker = () => {
       setValue(prop, newColor[prop])
       if (`${prop}Num` !== fromInput) setValue(`${prop}Num`, newColor[prop])
     })
-  }, [setValue])
+  }, [])
 
   // When a slider (or matching number input) changes:
   // - Update the matching input (number or slider)
@@ -131,8 +112,8 @@ export const Picker = () => {
   // - Update the text inputs with the new color
   const setSliderInput = React.useCallback(([name, value, model]) => {
     const colorProp = name.replace('Num', '')
-    /* const matchingVal = name.includes('Num') ? colorProp : `${name}Num` */
-    /* setValue(matchingVal, value) */
+    const matchingVal = name.includes('Num') ? colorProp : `${name}Num`
+    setValue(matchingVal, value)
     const newColor = adjustColor(colorProp, value, model)
     updateText({ newColor })
     updateSliders({ newColor, fromInput: name })
@@ -145,9 +126,9 @@ export const Picker = () => {
     updateSliders({ newColor })
   }, [setColor, adjustColor, updateText, updateSliders])
 
-  // On initial load, or when model changes, update inputs to match new color model
+  // On initial load
   React.useEffect(() => {
-    if (color && (!model.current || model.current !== color?.model)) {
+    if (color && (!model.current)) {
       updateSliders({ newColor: color })
       updateText({ newColor: color })
       model.current = color.model
@@ -173,7 +154,7 @@ export const Picker = () => {
           <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hsl" />
           <ColorSlider name="saturationl" onChange={setSliderInput} model="hsl" />
           <ColorSlider name="lightness" onChange={setSliderInput} model="hsl" />
-          <span style={{ display: 'block', height: '20px' }}>(H)WB</span>
+          <span style={{ display: 'block', height: '20px' }}>HWB</span>
           <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hwb" />
           <ColorSlider name="white" onChange={setSliderInput} model="hwb" />
           <ColorSlider name="wblack" onChange={setSliderInput} model="hwb" />

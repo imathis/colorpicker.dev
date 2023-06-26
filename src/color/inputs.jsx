@@ -1,5 +1,3 @@
-import { useFormContext } from 'react-hook-form'
-
 const codeTextProps = {
   autoComplete: "off",
   autoCorrect: "off",
@@ -8,7 +6,6 @@ const codeTextProps = {
 }
 
 const Input = ({ onChange: onChangeProp, ...props }) => {
-  const { register, getFieldState, setError } = useFormContext()
   const onChange = ({ target }) => {
     const { name, value } = target
     if (target.checkValidity()) {
@@ -16,7 +13,7 @@ const Input = ({ onChange: onChangeProp, ...props }) => {
     }
   }
   return <input 
-    {...register(props.name, { onChange })}
+    onChange={onChange}
     {...props}
   /> 
 }

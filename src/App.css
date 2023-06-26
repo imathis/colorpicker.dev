@@ -149,6 +149,11 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: var(--thumb-box-shadow);
 }
 
+input[type="range"]:hover::-webkit-slider-thumb {
+  transition: box-shadow .2s;
+  box-shadow: var(--thumb-box-shadow-hover);
+}
+
 input[type="range"]::-moz-range-thumb {
   -moz-appearance: none;
   height: 25px;
