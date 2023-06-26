@@ -4,6 +4,10 @@ export const colorModels = {
   rgb: ['red', 'green', 'blue', 'alpha'],
 }
 
+export const allColorParts = Object.values(colorModels).flat().reduce((acc, item) => {
+ return acc.indexOf(item) < 0 ? [...acc, item] : acc
+}, [])
+
 const toString = {
   hwb: ({ hue, white, wblack, alpha }) => {
     const main = `${hue} ${white}% ${wblack}%`
@@ -195,7 +199,7 @@ export const colorModel = (str) => {
 
 export const validColor = (str) => !!colorModel(str)
 
-const adjustColor = (color, prop, value) => {
+const adjustColor = (color, prop, value, model = color.model) => {
   // If we are setting a color from a string all at once rgb, hex, hsla, hwb as a string
   const stringColor = Object.keys(validate).includes(prop)
   if (stringColor && validColor(value)) {
@@ -210,7 +214,7 @@ const adjustColor = (color, prop, value) => {
   }
 
   // Setting individual attributes of a color
-  return Color(toString[color.model]({ ...color, [prop]: value }), color.model)
+  return Color(toString[model]({ ...color, [prop]: value }), model)
 }
 
 export const Color = (

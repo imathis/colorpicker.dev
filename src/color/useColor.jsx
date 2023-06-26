@@ -1,9 +1,9 @@
 import React from 'react'
 import { ColorContext } from './Context'
-import { Color, randomColor, setRoot, colorModels } from './helpers'
+import { Color, randomColor, setRoot, colorModels, allColorParts } from './helpers'
 
 const updateModelVars = ({ color }) => {
-  Object.keys(color.modelObject()).forEach((part) => {
+  allColorParts.forEach((part) => {
     setRoot(part, color[part])
   })
 }
