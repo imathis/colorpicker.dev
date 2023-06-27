@@ -33,7 +33,7 @@
   --input-box-shadow: rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0px inset;
   --input-bg: rgba(0,0,0,0.3);
   --input-color: rgba(255,255,255,0.8);
-  --input-text-shadow: rgba(0,0,0,0.5) 0 2px 1px;
+  --text-shadow: rgba(0,0,0,0.5) 0 2px 1px;
 
   --input-invalid-bg: rgba(102,0,0,0.3);
   --input-invalid-box-shadow: rgba(255,127,127,0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
@@ -109,7 +109,7 @@ body {
     --input-box-shadow: #fff 0 1px 1px, rgba(0,0,0,0.2) 0 1px 5px 0px inset;
     --input-bg: rgba(0,0,0,0.05);
     --input-color: rgba(0,0,0,0.8);
-    --input-text-shadow: rgba(255,255,255,1) 0 1px 1px;
+    --text-shadow: rgba(255,255,255,1) 0 1px 1px;
 
     --input-invalid-bg: rgba(214 0 0 / 0.19);
     --input-invalid-box-shadow: rgba(214 0 0 / 0.1) 0 1px 0, rgba(138 0 0 / 0.8) 0 1px 7px 0px inset;
