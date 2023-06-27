@@ -35,6 +35,7 @@ export const useColorHooks = (options = {}) => {
       setModel(newColor.model, newColor)
     }
 
+    window.history.replaceState({}, '', newColor.hex)
     updateModelVars({ color: newColor })
     setColorValue(newColor)
     setRootColor(newColor)

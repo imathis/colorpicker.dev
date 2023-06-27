@@ -11,9 +11,7 @@ function App() {
         <div className="credit">Created for your enjoyment by <a rel="noreferrer" href="https://twitter.com/imathis" target="_blank">Brandon&nbsp;Mathis</a></div>
       </div>
       <ColorProvider>
-        <div className="card">
-          <Picker />
-        </div>
+        <Picker />
       </ColorProvider>
     </div>
   )

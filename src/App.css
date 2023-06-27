@@ -33,7 +33,7 @@ input[data-copied] {
 
 input[type=text] {
   text-align: center;
-  padding: 8px 1em;
+  padding: 8px 0.6em;
   font-size: 1.1em;
 }
 
@@ -75,7 +75,7 @@ input[type=number] {
   display: grid;
   gap: 8px;
   text-transform: uppercase;
-  margin: 0px 0 40px;
+  margin: 10px 0 15px;
   font-weight: 200;
 }
 
@@ -164,6 +164,7 @@ input[type=number] {
 @media screen and (min-width: 550px) {
   .banner {
     margin-left: 150px;
+    margin-bottom: 30px;
   }
 
   .banner h1 {
