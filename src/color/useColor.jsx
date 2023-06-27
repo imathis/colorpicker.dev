@@ -12,10 +12,25 @@ const setRootColor = (color) => {
   setRoot('color', color.rgb)
 }
 
+const useUpdateUrl = (color) => {
+  React.useEffect(() => {
+    const ref = window.setTimeout(() => {
+      try {
+        window.history.replaceState({}, '', color.hex)
+      } catch (e) {
+        console.error(e)
+      }
+    }, 300)
+
+    return () => window.clearTimeout(ref)
+  }, [color])
+}
+
 export const useColorHooks = (options = {}) => {
   const { color: initialColor = null } = options
   const [model, setModelValue] = React.useState()
   const [color, setColorValue] = React.useState()
+  useUpdateUrl(color)
 
   const setModel = React.useCallback((m, c = color) => {
     if (colorModels[m]) { 
@@ -35,7 +50,6 @@ export const useColorHooks = (options = {}) => {
       setModel(newColor.model, newColor)
     }
 
-    window.history.replaceState({}, '', newColor.hex)
     updateModelVars({ color: newColor })
     setColorValue(newColor)
     setRootColor(newColor)
