@@ -118,6 +118,7 @@ input[type=number] {
   background-image: var(--rainbow);
   background-size: 100%;
   background-clip: text;
+  -webkit-background-clip: text;
   text-shadow: none;
   color: transparent;
 }
