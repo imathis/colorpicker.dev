@@ -32,9 +32,10 @@ const getRandom = (min, max, unit) => {
 export const setRoot = (prop, value) => document.documentElement.style.setProperty(`--${prop}`, value)
 export const getRoot = (prop) => document.documentElement.style.getPropertyValue(`--${prop}`)
 
-// Matches rgba? hsla? hwb and really any xxxa?(xxx xxx xxx xxx) format. Optional alpha capture
+// Matches hex, rgba? hsla? hwb and really any xxxa?(xxx xxx xxx xxx) format. Optional alpha capture
 const ColorTest = (type) => {
   if (type === 'hex') {
+    // Matches 3, 4, 6, and 8 character hex codes (4, 8 have alpha channels)
     return new RegExp('^#(\\b(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\\b)$')
   }
   const num = '([\\d.]+)' // number characters with decimals
@@ -177,16 +178,11 @@ const testRgb = (color, model) => {
     && (typeof alpha === 'undefined' || inbound(alpha, { max: 1 }))
 }
 
-// Validates hex colors with lengths: 3,4,6,8. (Those with 4 or 8 length contain alpha channel)
-const testHex = (color, model) => (
-  isColor[model](color) && [3, 4, 6, 8].includes(color.replace(/#/, '').length)
-)
-
 export const validate = {
   hsl: (str) => testHxx(str, 'hsl'),
   hwb: (str) => testHxx(str, 'hwb'),
   rgb: (str) => testRgb(str, 'rgb'), 
-  hex: (str) => testHex(str, 'hex'),
+  hex: (str) => isColor.hex(str),
 }
 
 export const colorModel = (str) => {
@@ -208,8 +204,6 @@ const adjustColor = (color, prop, value, model = color.model) => {
   }
 
   if (prop === 'model' && Object.keys(validate).includes(value)) {
-    /* const newColor = Color(color[value]) */
-    /* return model ? {...newColor, model } : newColor */
     return Color(color[value], value)
   }
 
