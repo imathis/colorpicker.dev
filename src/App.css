@@ -106,23 +106,27 @@ input[type=number] {
 .preamble:before,
 .preamble:after {
   width: 4.5em;
-  height: 1px;
+  height: 0px;
   display: inline-block;
-  border-bottom: 1px solid #888;
+  border-bottom: 1px solid currentColor;
+  box-shadow: var(--text-shadow-color) 0 1px 1px;
   position: relative;
-  top: -0.35em;
+  top: -0.3em;
   margin: 0 .5em;
 }
 
 .credit {
   font-size: .7em;
-  text-shadow: var(--text-shadow);
+  color: rgba(255,255,255, 0.3);
   font-style: normal;
   display: block;
   margin: 0em 0 1.2em;
   text-transform: uppercase;
   font-weight: normal;
-  letter-spacing: .5em;
+  letter-spacing: .4em;
+  background: var(--dynamic-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 
 @keyframes rainbow-move {
@@ -135,10 +139,15 @@ input[type=number] {
 }
 
 .credit a {
-  background: var(--dynamic-accent);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: rgba(255,255,255, 0.3);
+  color: rgba(255,255,255, 0.6);
+}
+@media (prefers-color-scheme: light) {
+  .credit {
+    color: rgba(0,0,0, 0.3);
+  }
+  .credit a {
+    color: rgba(0,0,0, 0.4);
+  }
 }
 
 .credit a:hover {
@@ -148,6 +157,8 @@ input[type=number] {
   text-shadow: none;
   color: transparent;
   animation: rainbow-move 15s linear infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 
 @media screen and (min-width: 550px) {

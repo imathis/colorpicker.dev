@@ -8,7 +8,7 @@ function App() {
       <div className="banner">
         <div className="preamble">A Most Excellent</div>
         <h1>Color Picker</h1>
-        <div className="credit">Brought to you by <a rel="noreferrer" href="https://twitter.com/imathis" target="_blank">Brandon&nbsp;Mathis</a></div>
+        <div className="credit">Created for your enjoyment by <a rel="noreferrer" href="https://twitter.com/imathis" target="_blank">Brandon&nbsp;Mathis</a></div>
       </div>
       <ColorProvider>
         <div className="card">
