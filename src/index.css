@@ -27,8 +27,8 @@
     rgba(255,255,255,0.2) 0 1px;
 
   --slider-box-shadow: 
-    rgba(255,255,255,0.3) 0 1px 2px inset,
-    rgba(0,0,0,0.3) 0 -1px 1px inset;
+    rgba(255,255,255,0.3) 0 1px 1px inset,
+    rgba(0,0,0,0.6) 0 0 0 1px;
 
   --input-box-shadow: rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0px inset;
   --input-bg: rgba(0,0,0,0.3);
@@ -54,6 +54,9 @@
     0 0 0 3px rgba(255, 255, 255, 1) inset,
     0 0 0 4px rgb(0 0 0 / 0.5) inset,
     0 0 0 1px rgb(0 0 0 / 0.5);
+
+  --dynamic-accent: hsl(var(--hue), calc(clamp(15, var(--saturationl), 60) * 1%), calc(clamp(35, var(--lightness), 70) * 1%));
+  --dark-stripe: rgba(0,0,0,0.1);
 }
 * {
   box-sizing: border-box;
@@ -61,11 +64,24 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--dynamic-accent);
   text-decoration: inherit;
 }
 a:hover {
   color: #535bf2;
+}
+
+html {
+  background-image: linear-gradient(-45deg, 
+    var(--dark-stripe) 25%,
+    rgba(0,0,0,0) 25%,
+    rgba(0,0,0,0) 50%,
+    var(--dark-stripe) 50%,
+    var(--dark-stripe) 75%,
+    rgba(0,0,0,0) 75%,
+    rgba(0,0,0,0)
+    );
+  background-size: 80px 80px; 
 }
 
 body {
@@ -74,30 +90,6 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 @media (prefers-color-scheme: light) {
@@ -111,10 +103,10 @@ button:focus-visible {
       rgba(255,255,255,0.6) 0 1px;
 
     --slider-box-shadow: 
-      rgba(255,255,255,0.6) 0 1px 2px inset,
-      rgba(0,0,0,0.3) 0 0 0 1px inset;
+      rgba(255,255,255,0.3) 0 1px 1px inset,
+      rgba(0,0,0,0.4) 0 0 0 1px;
 
-    --input-box-shadow: #fff 0 1px 0, rgba(0,0,0,0.2) 0 1px 7px 0px inset;
+    --input-box-shadow: #fff 0 1px 1px, rgba(0,0,0,0.2) 0 1px 5px 0px inset;
     --input-bg: rgba(0,0,0,0.05);
     --input-color: rgba(0,0,0,0.8);
     --input-text-shadow: rgba(255,255,255,1) 0 1px 1px;
@@ -125,7 +117,8 @@ button:focus-visible {
 
     --input-copied-bg: rgba(21 214 0 / 0.19);
     --input-copied-box-shadow: rgba(21 214 0 / 0.1) 0 1px 0, rgba(14 138 0 / 0.8) 0 1px 7px 0px inset;
-    --input-copied-color: #15d600;
+    --input-copied-color: #11a800;
+    --dark-stripe: rgba(0,0,0,0.03);
   }
   a:hover {
     color: #747bff;

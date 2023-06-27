@@ -1,7 +1,7 @@
 import React from 'react'
 import { useColor } from './useColor'
 import { Input, CodeInput } from './inputs'
-import { colorPatterns, allColorParts } from './helpers'
+import { setRoot, colorPatterns, allColorParts } from './helpers'
 
 const setValue = (name, value) => {
   Array.prototype.forEach.call(document.querySelectorAll(`[name=${name}]`), (el) => {
@@ -19,7 +19,12 @@ const trackBg = ({
   const propVal = (prop, i) => typeof prop === 'function' ? prop(i) : prop
   for (let i=0; i < steps; i += 1) {
     const vals = props.map((val) => propVal(val, i)).join(' ')
-    grad.push(`${type}(${vals} / ${propVal(alpha, i)})`)
+    if (alpha) {
+      grad.push(`${type}(${vals} / ${propVal(alpha, i)})`)
+    } else {
+      grad.push(`${type}(${vals})`)
+    }
+
   }
   return `linear-gradient(to right, ${grad.join(', ')})`
 }
@@ -44,6 +49,18 @@ const rgbBg = ({
   steps = 255,
   ...props
 }) => trackBg({ type: 'rgba', props: [red, green, blue], steps, ...props })
+
+const rainbowBg = () => {
+  const hue   = (v) => v * 36
+  const sat   = 'calc(clamp(35, var(--saturationl), 60) * 1%)'
+  const lig   = 'calc(clamp(55, var(--lightness), 70) * 1%)'
+  return trackBg({ 
+    type: 'hsl',
+    props: [hue, sat, lig],
+    steps: 10,
+    alpha: false,
+  })
+}
 
 const background = {
   hsl: {
@@ -131,35 +148,42 @@ export const Picker = () => {
       updateSliders({ newColor: color })
       updateText({ newColor: color })
       model.current = color.model
+      /* console.log(rainbowBg()) */
+      setRoot('rainbow', rainbowBg())
     }
   }, [model, color, updateText, updateSliders])
 
   if (color) return (
-    <div className="color-pickers">
+    <div className="main">
       <div className="color-swatch-wrapper">
         <div className="color-swatch" ref={swatch} />
         <CodeInput name="hex" onChange={onChangeText} pattern={colorPatterns.hex.source} />
       </div>
-      <span style={{ display: 'block', height: '20px' }}>HSL</span>
-      <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hsl" />
-      <ColorSlider name="saturationl" onChange={setSliderInput} model="hsl" />
-      <ColorSlider name="lightness" onChange={setSliderInput} model="hsl" />
-      <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
-      <CodeInput name="hsl" onChange={onChangeText} pattern={colorPatterns.hsl.source} />
+      <div className="color-pickers">
+        <div className="color-picker">
+          <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hsl" />
+          <ColorSlider name="saturationl" onChange={setSliderInput} model="hsl" />
+          <ColorSlider name="lightness" onChange={setSliderInput} model="hsl" />
+          <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
+          <CodeInput name="hsl" onChange={onChangeText} pattern={colorPatterns.hsl.source} />
+        </div>
 
-      <span style={{ display: 'block', height: '20px' }}>HWB</span>
-      <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hwb" />
-      <ColorSlider name="white" onChange={setSliderInput} model="hwb" />
-      <ColorSlider name="wblack" onChange={setSliderInput} model="hwb" />
-      <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
-      <CodeInput name="hwb" onChange={onChangeText} pattern={colorPatterns.hwb.source} />
+        <div className="color-picker">
+          <ColorSlider name="hue" max={360} step={1} onChange={setSliderInput} model="hwb" />
+          <ColorSlider name="white" onChange={setSliderInput} model="hwb" />
+          <ColorSlider name="wblack" onChange={setSliderInput} model="hwb" />
+          <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
+          <CodeInput name="hwb" onChange={onChangeText} pattern={colorPatterns.hwb.source} />
+        </div>
 
-      <span style={{ display: 'block', height: '20px' }}>RGB</span>
-      <ColorSlider name="red" onChange={setSliderInput} max={255} model="rgb" />
-      <ColorSlider name="green" onChange={setSliderInput} max={255} model="rgb" />
-      <ColorSlider name="blue" onChange={setSliderInput} max={255} model="rgb" />
-      <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
-      <CodeInput name="rgb" onChange={onChangeText} pattern={colorPatterns.rgb.source} />
+        <div className="color-picker">
+          <ColorSlider name="red" onChange={setSliderInput} max={255} model="rgb" />
+          <ColorSlider name="green" onChange={setSliderInput} max={255} model="rgb" />
+          <ColorSlider name="blue" onChange={setSliderInput} max={255} model="rgb" />
+          <ColorSlider name="alpha" step={0.01} max={1} onChange={setSliderInput} model={color.model} />
+          <CodeInput name="rgb" onChange={onChangeText} pattern={colorPatterns.rgb.source} />
+        </div>
+      </div>
     </div>
   )
   return null
