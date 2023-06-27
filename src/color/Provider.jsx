@@ -9,7 +9,6 @@ export const ColorProvider = (props) => {
       ? Color(window.location.hash).hsl
       : randomColor()
   }, [])
-  console.log({ color })
   const value = useColorHooks({ color })
 
       
