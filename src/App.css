@@ -1,4 +1,4 @@
-#root {
+#app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 10px;
@@ -229,6 +229,7 @@ input[type=number] {
   opacity: 0.5;
   border: transparent;
   transition: all .2s;
+  cursor: pointer;
 }
 
 .copy-code:hover {
