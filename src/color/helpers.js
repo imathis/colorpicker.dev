@@ -29,8 +29,8 @@ const getRandom = (min, max, unit) => {
   return unit ? `${num}${unit}` : num
 }
 
-export const setRoot = (prop, value) => document.documentElement.style.setProperty(`--${prop}`, value)
-export const getRoot = (prop) => document.documentElement.style.getPropertyValue(`--${prop}`)
+export const setRoot = (prop, value) => document.documentElement.style.setProperty(`--picker-${prop}`, value)
+export const getRoot = (prop) => document.documentElement.style.getPropertyValue(`--picker-${prop}`)
 
 // Matches hex, rgba? hsla? hwb and really any xxxa?(xxx xxx xxx xxx) format. Optional alpha capture
 const ColorTest = (type) => {

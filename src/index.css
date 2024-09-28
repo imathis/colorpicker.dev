@@ -12,52 +12,52 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  --track-bg: rgba(0,0,0,0.5);
-  --track-check: rgba(255,255,255,0.2);
-  --track-check-alt: transparent;
-  --track-check-gradient: linear-gradient(45deg,
-      var(--track-check) 25%,
-      var(--track-check-alt) 25%,
-      var(--track-check-alt) 75%,
-      var(--track-check) 75%,
-      var(--track-check)
+  --picker-track-bg: rgba(0,0,0,0.5);
+  --picker-track-check: rgba(255,255,255,0.2);
+  --picker-track-check-alt: transparent;
+  --picker-track-check-gradient: linear-gradient(45deg,
+      var(--picker-track-check) 25%,
+      var(--picker-track-check-alt) 25%,
+      var(--picker-track-check-alt) 75%,
+      var(--picker-track-check) 75%,
+      var(--picker-track-check)
     );
-  --track-box-shadow: 
+  --picker-track-box-shadow: 
     rgba(0,0,0,0.3) 0 1px inset,
     rgba(255,255,255,0.2) 0 1px;
 
-  --slider-box-shadow: 
+  --picker-slider-box-shadow: 
     rgba(255,255,255,0.3) 0 1px 1px inset,
     rgba(0,0,0,0.6) 0 0 0 1px;
 
-  --input-box-shadow: rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0px inset;
-  --input-bg: rgba(0,0,0,0.3);
-  --input-color: rgba(255,255,255,0.8);
+  --picker-input-box-shadow: rgba(255,255,255,0.1) 0 1px 0,rgba(0,0,0,0.8) 0 1px 7px 0px inset;
+  --picker-input-bg: rgba(0,0,0,0.3);
+  --picker-input-color: rgba(255,255,255,0.8);
 
-  --input-invalid-bg: rgba(102,0,0,0.3);
-  --input-invalid-box-shadow: rgba(255,127,127,0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
-  --input-invalid-color: #ff0f0f;
+  --picker-input-invalid-bg: rgba(102,0,0,0.3);
+  --picker-input-invalid-box-shadow: rgba(255,127,127,0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
+  --picker-input-invalid-color: #ff0f0f;
 
-  --input-copied-bg: rgba(10, 102, 0, 0.3);
-  --input-copied-box-shadow: rgba(140, 255, 127, 0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
-  --input-copied-color: #27ff0f;
+  --picker-input-copied-bg: rgba(10, 102, 0, 0.3);
+  --picker-input-copied-box-shadow: rgba(140, 255, 127, 0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
+  --picker-input-copied-color: #27ff0f;
 
-  --thumb-box-shadow: 
-    0 0 0 3px rgba(var(--red), var(--green), var(--blue), 0.3) inset,
+  --picker-thumb-box-shadow: 
+    0 0 0 3px rgba(var(--picker-red), var(--picker-green), var(--picker-blue), 0.3) inset,
     0 0 0 3px rgba(255, 255, 255, 1) inset,
     0 0 0 4px rgb(0 0 0 / 0.5) inset,
     0 0 0 1px rgb(0 0 0 / 0.5);
 
-  --thumb-box-shadow-hover: 
-    0 0 0 3px rgba(var(--red), var(--green), var(--blue), 0.1) inset,
+  --picker-thumb-box-shadow-hover: 
+    0 0 0 3px rgba(var(--picker-red), var(--picker-green), var(--picker-blue), 0.1) inset,
     0 0 0 3px rgba(255, 255, 255, 1) inset,
     0 0 0 4px rgb(0 0 0 / 0.5) inset,
     0 0 0 1px rgb(0 0 0 / 0.5);
 
-  --dynamic-accent: hsl(var(--hue), calc(clamp(15, var(--saturationl), 60) * 1%), calc(clamp(35, var(--lightness), 70) * 1%));
-  --dark-stripe: rgba(0,0,0,0.1);
-  --text-shadow-color: rgba(0,0,0,0.5);
-  --text-shadow: var(--text-shadow-color) 0 2px 1px;
+  --picker-dynamic-accent: hsl(var(--picker-hue), calc(clamp(15, var(--picker-saturationl), 60) * 1%), calc(clamp(35, var(--picker-lightness), 70) * 1%));
+  --picker-dark-stripe: rgba(0,0,0,0.1);
+  --picker-text-shadow-color: rgba(0,0,0,0.5);
+  --picker-text-shadow: var(--picker-text-shadow-color) 0 2px 1px;
 }
 * {
   box-sizing: border-box;
@@ -65,7 +65,7 @@
 
 a {
   font-weight: 500;
-  color: var(--dynamic-accent);
+  color: var(--picker-dynamic-accent);
   text-decoration: inherit;
 }
 a:hover {
@@ -74,11 +74,11 @@ a:hover {
 
 html {
   background-image: linear-gradient(-45deg, 
-    var(--dark-stripe) 25%,
+    var(--picker-dark-stripe) 25%,
     rgba(0,0,0,0) 25%,
     rgba(0,0,0,0) 50%,
-    var(--dark-stripe) 50%,
-    var(--dark-stripe) 75%,
+    var(--picker-dark-stripe) 50%,
+    var(--picker-dark-stripe) 75%,
     rgba(0,0,0,0) 75%,
     rgba(0,0,0,0)
     );
@@ -88,8 +88,8 @@ html {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
+  /* place-items: center; */
+  min-width: 220px;
   min-height: 100vh;
 }
 
@@ -97,31 +97,31 @@ body {
   :root {
     color: #213547;
     background-color: #efefef;
-    --track-bg: rgba(0,0,0,0.05);
-    --track-check: rgba(0,0,0,0.2);
-    --track-box-shadow: 
+    --picker-track-bg: rgba(0,0,0,0.05);
+    --picker-track-check: rgba(0,0,0,0.2);
+    --picker-track-box-shadow: 
       rgba(0,0,0,0.3) 0 1px inset,
       rgba(255,255,255,0.6) 0 1px;
 
-    --slider-box-shadow: 
+    --picker-slider-box-shadow: 
       rgba(255,255,255,0.3) 0 1px 1px inset,
       rgba(0,0,0,0.4) 0 0 0 1px;
 
-    --input-box-shadow: #fff 0 1px 1px, rgba(0,0,0,0.2) 0 1px 5px 0px inset;
-    --input-bg: rgba(0,0,0,0.05);
-    --input-color: rgba(0,0,0,0.8);
+    --picker-input-box-shadow: #fff 0 1px 1px, rgba(0,0,0,0.2) 0 1px 5px 0px inset;
+    --picker-input-bg: rgba(0,0,0,0.05);
+    --picker-input-color: rgba(0,0,0,0.8);
 
-    --input-invalid-bg: rgba(214 0 0 / 0.19);
-    --input-invalid-box-shadow: rgba(214 0 0 / 0.1) 0 1px 0, rgba(138 0 0 / 0.8) 0 1px 7px 0px inset;
-    --input-invalid-color: #d60000;
+    --picker-input-invalid-bg: rgba(214 0 0 / 0.19);
+    --picker-input-invalid-box-shadow: rgba(214 0 0 / 0.1) 0 1px 0, rgba(138 0 0 / 0.8) 0 1px 7px 0px inset;
+    --picker-input-invalid-color: #d60000;
 
-    --input-copied-bg: rgba(21 214 0 / 0.19);
-    --input-copied-box-shadow: rgba(21 214 0 / 0.1) 0 1px 0, rgba(14 138 0 / 0.8) 0 1px 7px 0px inset;
-    --input-copied-color: #11a800;
+    --picker-input-copied-bg: rgba(21 214 0 / 0.19);
+    --picker-input-copied-box-shadow: rgba(21 214 0 / 0.1) 0 1px 0, rgba(14 138 0 / 0.8) 0 1px 7px 0px inset;
+    --picker-input-copied-color: #11a800;
 
-    --dark-stripe: rgba(0,0,0,0.03);
-    --text-shadow-color: rgba(255,255,255,1);
-    --text-shadow: var(--text-shadow-color) 0 1px 1px;
+    --picker-dark-stripe: rgba(0,0,0,0.03);
+    --picker-text-shadow-color: rgba(255,255,255,1);
+    --picker-text-shadow: var(--picker-text-shadow-color) 0 1px 1px;
   }
   a:hover {
     color: #747bff;
