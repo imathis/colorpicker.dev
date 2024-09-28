@@ -33,7 +33,7 @@ input[data-copied] {
 input[type=text] {
   text-align: center;
   padding: 8px 0.6em;
-  font-size: 1.1em;
+  font-size: 1em;
 }
 
 input[type=number] {
@@ -277,8 +277,8 @@ input[type=number] {
 
 .copy-code {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: -1px;
+  top: -3px;
   bottom: 0;
   background: transparent;
   padding: 0 10px;

@@ -54,11 +54,13 @@
     0 0 0 4px rgb(0 0 0 / 0.5) inset,
     0 0 0 1px rgb(0 0 0 / 0.5);
 
-  --picker-dynamic-accent: hsl(var(--picker-hue), calc(clamp(15, var(--picker-saturationl), 60) * 1%), calc(clamp(35, var(--picker-lightness), 70) * 1%));
+  --picker-dynamic-accent: hwb(var(--picker-hue) calc(clamp(0, var(--picker-white), 55) * 1%) calc(clamp(0, var(--picker-wblack), 35) * 1%));
+  --picker-dynamic-accent-footer: hwb(var(--picker-hue) 25% 0%);
   --picker-dark-stripe: rgba(0,0,0,0.1);
   --picker-text-shadow-color: rgba(0,0,0,0.5);
   --picker-text-shadow: var(--picker-text-shadow-color) 0 2px 1px;
 }
+
 * {
   box-sizing: border-box;
 }
@@ -107,11 +109,11 @@ footer {
 }
 
 .footer-links * {
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 .footer-links a {
-  color: var(--picker-dynamic-accent);
+  color: var(--picker-dynamic-accent-footer);
 }
 .footer-links a:hover {
   color: var(--picker-dynamic-accent);
@@ -119,7 +121,7 @@ footer {
   text-decoration: underline;
 }
 .footer-links .divider {
-  opacity: 0.3;
+  opacity: 0.2;
   font-size: 1.3em;
 }
 
@@ -148,7 +150,7 @@ code {
   font-family: system-mono;
 }
 code, h3 {
-  color: var(--picker-dynamic-accent);
+  color: var(--picker-dynamic-accent-footer);
 }
 abbr {
   opacity: 0.8;
@@ -195,6 +197,8 @@ abbr:hover {
     --picker-dark-stripe: rgba(0,0,0,0.03);
     --picker-text-shadow-color: rgba(255,255,255,1);
     --picker-text-shadow: var(--picker-text-shadow-color) 0 1px 1px;
+    --picker-dynamic-accent: hwb(var(--picker-hue) calc(clamp(0, var(--picker-white), 35) * 1%) calc(clamp(0, var(--picker-wblack), 45) * 1%));
+    --picker-dynamic-accent-footer: hwb(var(--picker-hue) 0% 25%);
   }
   a:hover {
     color: #747bff;
