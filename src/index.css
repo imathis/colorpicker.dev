@@ -87,12 +87,85 @@ html {
 
 body {
   margin: 0;
-  display: flex;
-  /* place-items: center; */
+  display: grid;
   min-width: 220px;
   min-height: 100vh;
 }
 
+footer {
+  text-align: left;
+  text-shadow: var(--picker-text-shadow);
+}
+.footer-links {
+  display: flex;
+  gap: 10px;
+  margin: 3em auto;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.footer-links * {
+  opacity: 0.6;
+}
+
+.footer-links a {
+  color: var(--picker-dynamic-accent);
+}
+.footer-links a:hover {
+  color: var(--picker-dynamic-accent);
+  opacity: 1;
+  text-decoration: underline;
+}
+.footer-links .divider {
+  opacity: 0.3;
+  font-size: 1.3em;
+}
+
+.footer-links button {
+  appearance: none;
+  border: 0;
+  background: none;
+  font-size: inherit;
+  cursor: help;
+  padding: 0;
+  margin: 0;
+  text-shadow: var(--picker-text-shadow);
+}
+.footer-links button:hover {
+  color: var(--picker-dynamic-accent);
+}
+
+#explainer {
+  max-width: 630px;
+}
+#explainer[data-visible=false] {
+  display: none;
+}
+
+code {
+  font-family: system-mono;
+}
+code, h3 {
+  color: var(--picker-dynamic-accent);
+}
+abbr {
+  opacity: 0.8;
+  cursor: help;
+  border-bottom: 1px dotted;
+}
+abbr:hover {
+  opacity: 1;
+  mix-blend-mode: screen;
+}
+
+@font-face {
+  font-family: system-mono;
+  font-style: normal;
+  font-weight: 400;
+  src: local('.SFNS-Mono'), local('ui-monospace'), local("Cascadia Mono"), local("Segoe UI Mono"), local("Ubuntu Mono"), local("Roboto Mono"), local("Menlo"), local("Monaco"), local("Consolas"), local("monospace");
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

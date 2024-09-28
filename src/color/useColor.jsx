@@ -30,8 +30,6 @@ export const useColorHooks = (options = {}) => {
   const { color: initialColor = null } = options
   const [model, setModelValue] = React.useState()
   const [color, setColorValue] = React.useState()
-  console.log(initialColor)
-  console.log(color)
 
   useUpdateUrl(color)
 
